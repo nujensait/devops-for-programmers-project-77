@@ -24,25 +24,18 @@ wsl-reinstall:  ## Переустановить WSL (сбросить)
 	wsl --unregister Ubuntu
 	wsl --install -d Ubuntu
 
-## --- Yandex Cloud / Vault ---
+## --- Ya Cloud cmds ~ Terraform ---
 
 load-vars: ## Загрузить переменные из vault.yml
 	./load_vault_vars.sh
+
+tf-init:  ## Инициализировать Terraform
+	cd terraform && terraform init
 
 tf-plan: load-vars ## Планирование с загруженными переменными
 	cd terraform && terraform plan
 
 tf-apply: load-vars ## Применение с загруженными переменными
-	cd terraform && terraform apply
-
-## --- Terraform ---
-tf-init:  ## Инициализировать Terraform
-	cd terraform && terraform init
-
-tf-plan:  ## Планирование изменений
-	cd terraform && terraform plan
-
-tf-apply:  ## Применить изменения
 	cd terraform && terraform apply
 
 tf-destroy:  ## Уничтожить инфраструктуру
