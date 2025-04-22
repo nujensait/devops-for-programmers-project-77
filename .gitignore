@@ -4,4 +4,4 @@
 .terraform/
 terraform.tfvars
 *.vault.yml
-READMY.txt
+

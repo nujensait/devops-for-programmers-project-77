@@ -48,6 +48,10 @@ ansible-vault-edit:  ## Редактировать зашифрованный ф
 ansible-play:  ## Запустить Ansible playbook
 	ansible-playbook ansible/playbook.yml --ask-vault-pass
 
+## --- Hexlet проверки ---
+code-setup:  ## Установить зависимости для тестов Hexlet
+	cd code/ansible && ansible-galaxy collection install -r requirements.yml
+
 ## --- Общие команды ---
 setup: tf-init  ## Инициализировать проект (Terraform + Ansible)
 deploy: tf-apply ansible-play  ## Развернуть инфраструктуру и применить конфигурацию
