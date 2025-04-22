@@ -1,6 +1,7 @@
 # Makefile для DevOps проекта (WSL, Terraform, Ansible)
 
-.PHONY: help
+.PHONY: help setup code-setup tf-init tf-plan tf-apply tf-destroy ansible-vault-edit ansible-play deploy clean
+
 help:  ## Показать эту справку
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
@@ -30,16 +31,16 @@ load-vars: ## Загрузить переменные из vault.yml
 	./load_vault_vars.sh
 
 tf-init:  ## Инициализировать Terraform
-	cd terraform && terraform init
+	terraform -chdir=code/terraform init
 
 tf-plan: load-vars ## Планирование с загруженными переменными
-	cd terraform && terraform plan
+	terraform -chdir=code/terraform plan
 
 tf-apply: load-vars ## Применение с загруженными переменными
-	cd terraform && terraform apply
+	terraform -chdir=code/terraform apply
 
 tf-destroy:  ## Уничтожить инфраструктуру
-	cd terraform && terraform destroy
+	terraform -chdir=code/terraform destroy
 
 ## --- Ansible ---
 ansible-vault-edit:  ## Редактировать зашифрованный файл с переменными
@@ -53,6 +54,6 @@ code-setup:  ## Установить зависимости для тестов 
 	cd code/ansible && ansible-galaxy collection install -r requirements.yml
 
 ## --- Общие команды ---
-setup: tf-init  ## Инициализировать проект (Terraform + Ansible)
+setup: tf-init code-setup ## Инициализировать проект (Terraform + Ansible)
 deploy: tf-apply ansible-play  ## Развернуть инфраструктуру и применить конфигурацию
 clean: tf-destroy  ## Удалить всю инфраструктуру
