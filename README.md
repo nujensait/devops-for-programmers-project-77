@@ -1,26 +1,34 @@
-# Table of Contents
-1. [About this project](#about-this-project)
-2. [Hexlet tests status](#hexlet-tests-and-linter-status)
-3. [Project structure](#project-structure)
-4. [Contacts](#contacts)
+# Оглавление
+1. [О проекте](#о-проекте)
+2. [Статус тестов Hexlet](#статус-тестов-hexlet)
+3. [Структура проекта](#структура-проекта)
+4. [Быстрый старт](#быстрый-старт)
+5. [Команды управления](#команды-управления)
+   - [WSL Управление](#wsl-управление)
+   - [Terraform Команды](#terraform-команды)
+   - [Ansible Команды](#ansible-команды)
+   - [Комплексные команды](#комплексные-команды)
+6. [Безопасность](#безопасность)
+7. [Требования](#требования)
+8. [Контакты](#контакты)
 
 -----
 
-## About this project
-- Hexlet's course: ["DevOps for Programmers"](https://lite.al/VpBen)
-- Project #3: Infrastructure as code (Terraform)
+## О проекте
+- Курс Hexlet: ["DevOps для программистов"](https://lite.al/VpBen)
+- Проект №3: Инфраструктура как код (Terraform)
 
 ----
 
-## Hexlet tests and linter status
+## Статус тестов Hexlet
 [![Actions Status](https://github.com/nujensait/devops-for-programmers-project-77/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/nujensait/devops-for-programmers-project-77/actions)
 
 -----
 
-## Project structure
+## Структура проекта
 
 ```bash
-your_project/
+<project_root>/
 ├── terraform/          # Инфраструктура как код (Terraform)
 │   ├── provider.tf     # Конфигурация провайдера Yandex Cloud
 │   ├── backend.tf      # Конфигурация удалённого бэкенда (S3)
@@ -32,8 +40,64 @@ your_project/
 └── README.md           # Описание проекта
 ```
 
-## Contacts
-
-- Author: Mikhail Ikonnikov <mishaikon@gmail.com>
-
 ----
+
+## Быстрый старт
+
+```bash
+make setup    # Инициализирует проект
+make deploy   # Развертывает инфраструктуру
+make clean    # Удаляет все ресурсы
+```
+
+## Команды управления
+
+### WSL Управление
+| Команда                    | Описание                                                           |
+|----------------------------|--------------------------------------------------------------------|
+| `make wsl-shutdown`        | Полная остановка WSL (аналог перезагрузки)                         |
+| `make wsl-update`          | Обновление WSL до последней версии                                 |
+| `make wsl-restart-service` | Перезапуск службы LxssManager (требует PowerShell)                 |
+| `make wsl-reset-network`   | Сброс сетевых настроек (решает проблемы с подключением)            |
+| `make wsl-reinstall`       | Полная переустановка WSL (сбрасывает дистрибутив на чистую версию) |
+
+### Terraform Команды
+| Команда           | Описание                                            |
+|-------------------|-----------------------------------------------------|
+| `make tf-init`    | Инициализация Terraform (загрузка провайдеров)      |
+| `make tf-plan`    | Просмотр планируемых изменений инфраструктуры       |
+| `make tf-apply`   | Применение изменений (развертывание инфраструктуры) |
+| `make tf-destroy` | Уничтожение всей созданной инфраструктуры           |
+
+### Ansible Команды
+| Команда                   | Описание                                                         |
+|---------------------------|------------------------------------------------------------------|
+| `make ansible-vault-edit` | Редактирование зашифрованного файла с секретами (требует пароль) |
+| `make ansible-play`       | Запуск Ansible playbook для настройки серверов                   |
+
+### Комплексные команды
+| Команда       | Описание                                                                |
+|---------------|-------------------------------------------------------------------------|
+| `make setup`  | Инициализирует весь проект (аналог tf-init)                             |
+| `make deploy` | Полный цикл развертывания: создание инфраструктуры + настройка серверов |
+| `make clean`  | Полная очистка (удаление всех облачных ресурсов)                        |
+
+## Безопасность
+Все секретные переменные хранятся в зашифрованном виде с использованием:
+- ansible-vault для Ansible
+- Переменных окружения для Terraform
+
+⚠ Важно: Никогда не коммитьте следующие файлы в Git:
+- terraform.tfvars
+- Любые файлы с паролями в открытом виде
+- Файлы состояний Terraform (*.tfstate)
+
+## Требования
+- WSL2 (для Windows)
+- Terraform >= 1.0
+- Ansible >= 2.10
+- Yandex Cloud CLI (если используется)
+
+## Контакты
+
+- Автор: Михаил Иконников <mishaikon@gmail.com>
