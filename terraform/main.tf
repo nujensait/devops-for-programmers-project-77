@@ -39,6 +39,17 @@ resource "yandex_vpc_security_group" "app_sg" {
     v4_cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # Разрешаем входящий трафик для проверок работоспособности от Yandex Cloud
+  ingress {
+    protocol       = "TCP"
+    port           = 80
+    v4_cidr_blocks = [
+      "198.18.235.0/24",  # Диапазон IP для проверок работоспособности Yandex Cloud
+      "198.18.248.0/24"   # Дополнительный диапазон для проверок работоспособности
+    ]
+    description = "Healthchecks from Yandex Cloud"
+  }
+
   # Разрешаем исходящий трафик
   egress {
     protocol       = "ANY"
