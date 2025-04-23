@@ -1,6 +1,7 @@
 # Makefile для DevOps проекта (WSL, Terraform, Ansible)
 
-.PHONY: help
+.PHONY: help setup code-setup tf-init tf-plan tf-apply tf-destroy ansible-vault-edit ansible-play deploy clean
+
 help:  ## Показать эту справку
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
