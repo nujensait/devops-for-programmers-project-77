@@ -26,11 +26,14 @@ wsl-reinstall:  ## Переустановить WSL (сбросить)
 
 ## --- Ya Cloud cmds ~ Terraform ---
 
+view-vault:	## show secret keys
+	ansible-vault view ansible/vault.yml
+
 load-vars: ## Загрузить переменные из vault.yml
 	./load_vault_vars.sh
 
-tf-init:  ## Инициализировать Terraform
-	cd terraform && terraform init
+tf-init: load-vars ## Инициализировать Terraform
+	cd terraform && terraform init -backend-config=backend.tfvars
 
 tf-plan: load-vars ## Планирование с загруженными переменными
 	cd terraform && terraform plan
@@ -51,4 +54,5 @@ ansible-play:  ## Запустить Ansible playbook
 ## --- Общие команды ---
 setup: tf-init  ## Инициализировать проект (Terraform + Ansible)
 deploy: tf-apply ansible-play  ## Развернуть инфраструктуру и применить конфигурацию
+all: tf-init tf-plan tf-apply ansible-play  ## Все команды
 clean: tf-destroy  ## Удалить всю инфраструктуру

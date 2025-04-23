@@ -7,9 +7,9 @@ terraform {
     key        = "terraform/state.tfstate"
     region     = "ru-central1"
     
-    # Учетные данные нужно указать здесь или передать через -backend-config
-    access_key = "YCAJEym00ii1IK_lhoE3rvuLg"  # Замените на ваш ключ доступа
-    secret_key = "YCNvvSt6Tq0YJvsR18FcRlQ5WkhrSOicBj5i9ZyA"  # Замените на ваш секретный ключ
+    # Ключи доступа будут переданы через -backend-config
+    # access_key = "..."
+    # secret_key = "..."
     
     skip_region_validation      = true
     skip_credentials_validation = true
