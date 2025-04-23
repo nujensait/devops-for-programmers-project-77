@@ -48,6 +48,9 @@ tf-apply: ## Применение с загруженными переменны
 tf-destroy:  ## Уничтожить инфраструктуру
 	./load_vault_vars.sh && cd terraform && terraform destroy
 
+show-lb-ip:  ## Показать IP-адрес балансировщика нагрузки
+	cd terraform && terraform output load_balancer_ip
+
 ## --- Ansible ---
 ansible-vault-edit:  ## Редактировать зашифрованный файл с переменными
 	ansible-vault edit ansible/vault.yml
