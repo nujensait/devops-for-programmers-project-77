@@ -45,6 +45,8 @@ ansible-vault view ansible/vault.yml --ask-vault-pass | grep -v "^#" | grep -v "
             echo "datadog_app_key = \"${clean_value}\"" >> "$TERRAFORM_TFVARS"
         elif [ "$clean_key" = "datadog_site" ]; then
             echo "datadog_site = \"${clean_value}\"" >> "$TERRAFORM_TFVARS"
+        elif [ "$clean_key" = "upmon_api_key" ]; then
+            echo "upmon_api_key = \"${clean_value}\"" >> "$TERRAFORM_TFVARS"
         else
             echo "${clean_key} = \"${clean_value}\"" >> "$TERRAFORM_TFVARS"
         fi
