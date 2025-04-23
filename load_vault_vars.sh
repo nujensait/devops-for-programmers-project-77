@@ -31,8 +31,8 @@ ansible-vault view ansible/vault.yml --ask-vault-pass | grep -v "^#" | grep -v "
     
     # Проверяем, что ключ не пустой и не содержит недопустимых символов
     if [ -n "$clean_key" ] && ! [[ "$clean_key" =~ [^a-zA-Z0-9_] ]]; then
-        # Удаляем начальные и конечные пробелы из значения
-        clean_value=$(echo "$value" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')
+        # Удаляем начальные и конечные пробелы и кавычки из значения
+        clean_value=$(echo "$value" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' -e 's/^"//' -e 's/"$//')
         
         # Добавляем переменную в terraform.tfvars
         if [ "$clean_key" = "s3_access_key" ]; then
@@ -40,22 +40,16 @@ ansible-vault view ansible/vault.yml --ask-vault-pass | grep -v "^#" | grep -v "
         elif [ "$clean_key" = "s3_secret_key" ]; then
             echo "# s3_secret_key = \"${clean_value}\"" >> "$TERRAFORM_TFVARS"
         else
-            # Экранируем кавычки в значении, если они есть
-            escaped_value=$(echo "$clean_value" | sed 's/"/\\"/g')
-            echo "${clean_key} = \"${escaped_value}\"" >> "$TERRAFORM_TFVARS"
+            echo "${clean_key} = \"${clean_value}\"" >> "$TERRAFORM_TFVARS"
         fi
         
         # Если это ключи доступа S3, добавляем их в backend.tfvars
         if [ "$clean_key" = "s3_access_key" ]; then
-            # Экранируем кавычки в значении, если они есть
-            escaped_value=$(echo "$clean_value" | sed 's/"/\\"/g')
-            echo "access_key = \"${escaped_value}\"" >> "$BACKEND_TFVARS"
+            echo "access_key = \"${clean_value}\"" >> "$BACKEND_TFVARS"
         fi
         
         if [ "$clean_key" = "s3_secret_key" ]; then
-            # Экранируем кавычки в значении, если они есть
-            escaped_value=$(echo "$clean_value" | sed 's/"/\\"/g')
-            echo "secret_key = \"${escaped_value}\"" >> "$BACKEND_TFVARS"
+            echo "secret_key = \"${clean_value}\"" >> "$BACKEND_TFVARS"
         fi
     elif [ -n "$clean_key" ]; then
         echo "Пропускаем переменную с недопустимыми символами: $clean_key"
