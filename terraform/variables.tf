@@ -35,3 +35,22 @@ variable "s3_secret_key" {
   sensitive   = true
 }
 */
+
+# DataDog variables
+variable "datadog_api_key" {
+  description = "DataDog API key"
+  type        = string
+  sensitive   = true
+}
+
+variable "datadog_app_key" {
+  description = "DataDog Application key"
+  type        = string
+  sensitive   = true
+}
+
+variable "datadog_site" {
+  description = "DataDog site (datadoghq.com, datadoghq.eu, etc.)"
+  type        = string
+  default     = "datadoghq.com"
+}

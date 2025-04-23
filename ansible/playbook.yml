@@ -8,6 +8,24 @@
     pip_install_packages:
       - name: docker
       - name: docker-compose
+    # DataDog configuration
+    datadog_api_key: "{{ lookup('ansible.builtin.env', 'DATADOG_API_KEY', default=datadog_api_key) }}"
+    datadog_site: "{{ lookup('ansible.builtin.env', 'DATADOG_SITE', default=datadog_site) }}"
+    datadog_config:
+      logs_enabled: true
+      process_config:
+        enabled: "true"
+      apm_config:
+        enabled: true
+    datadog_checks:
+      http_check:
+        init_config:
+        instances:
+          - name: App Status
+            url: http://localhost:80
+            timeout: 5
+            method: GET
+            http_response_status_code: 200
 
   tasks:
     - name: Update apt cache
@@ -36,6 +54,11 @@
       include_role:
         name: geerlingguy.pip
       tags: [setup, pip]
+
+    - name: Install DataDog agent
+      include_role:
+        name: datadog.datadog
+      tags: [setup, monitoring, datadog]
 
     - name: Create app directory
       file:

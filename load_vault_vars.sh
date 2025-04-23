@@ -39,6 +39,12 @@ ansible-vault view ansible/vault.yml --ask-vault-pass | grep -v "^#" | grep -v "
             echo "# s3_access_key = \"${clean_value}\"" >> "$TERRAFORM_TFVARS"
         elif [ "$clean_key" = "s3_secret_key" ]; then
             echo "# s3_secret_key = \"${clean_value}\"" >> "$TERRAFORM_TFVARS"
+        elif [ "$clean_key" = "datadog_api_key" ]; then
+            echo "datadog_api_key = \"${clean_value}\"" >> "$TERRAFORM_TFVARS"
+        elif [ "$clean_key" = "datadog_app_key" ]; then
+            echo "datadog_app_key = \"${clean_value}\"" >> "$TERRAFORM_TFVARS"
+        elif [ "$clean_key" = "datadog_site" ]; then
+            echo "datadog_site = \"${clean_value}\"" >> "$TERRAFORM_TFVARS"
         else
             echo "${clean_key} = \"${clean_value}\"" >> "$TERRAFORM_TFVARS"
         fi
