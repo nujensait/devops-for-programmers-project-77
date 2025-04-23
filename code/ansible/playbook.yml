@@ -1,0 +1,57 @@
+---
+- name: Setup web servers
+  hosts: webservers
+  become: true
+  vars:
+    docker_install_compose: true
+    docker_compose_version: "2.17.2"
+    pip_install_packages:
+      - name: docker
+      - name: docker-compose
+    # DataDog configuration
+    datadog_api_key: "{{ lookup('ansible.builtin.env', 'DATADOG_API_KEY', default=datadog_api_key) }}"
+    datadog_site: "{{ lookup('ansible.builtin.env', 'DATADOG_SITE', default=datadog_site) }}"
+    datadog_config:
+      logs_enabled: true
+      process_config:
+        enabled: "true"
+      apm_config:
+        enabled: true
+    datadog_checks:
+      http_check:
+        init_config:
+        instances:
+          - name: Application Health Check
+            url: http://localhost
+            timeout: 5
+            method: GET
+            http_response_status_code: 200
+
+  roles:
+    - role: geerlingguy.pip
+      tags: [setup]
+    - role: geerlingguy.docker
+      tags: [setup]
+    - role: datadog.datadog
+      tags: [setup, datadog]
+
+  tasks:
+    - name: Create app directory
+      file:
+        path: /app
+        state: directory
+        mode: '0755'
+      tags: [setup, deploy]
+
+    - name: Copy docker-compose.yml
+      template:
+        src: docker-compose.yml.j2
+        dest: /app/docker-compose.yml
+        mode: '0644'
+      tags: [deploy]
+
+    - name: Start application
+      community.docker.docker_compose:
+        project_src: /app
+        state: present
+      tags: [deploy, restart]
