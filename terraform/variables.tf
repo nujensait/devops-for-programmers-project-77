@@ -20,6 +20,9 @@ variable "yc_zone" {
   default     = "ru-central1-a"
 }
 
+# Переменные S3 закомментированы, так как мы используем локальный бэкенд
+# Раскомментируйте их, если вернётесь к использованию S3 бэкенда
+/*
 variable "s3_access_key" {
   description = "Yandex Object Storage access key"
   type        = string
@@ -31,3 +34,4 @@ variable "s3_secret_key" {
   type        = string
   sensitive   = true
 }
+*/

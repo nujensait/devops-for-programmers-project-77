@@ -1,4 +1,11 @@
 terraform {
+  # Временно используем локальный бэкенд вместо S3 из-за проблем с подключением
+  backend "local" {
+    path = "terraform.tfstate"
+  }
+  
+  # Закомментированная конфигурация S3 бэкенда для будущего использования
+  /*
   backend "s3" {
     endpoints = {
       s3 = "https://storage.yandexcloud.net"
@@ -16,4 +23,5 @@ terraform {
     skip_requesting_account_id  = true  # Добавлено для Yandex Cloud
     skip_s3_checksum            = true  # Добавлено для совместимости
   }
+  */
 }
