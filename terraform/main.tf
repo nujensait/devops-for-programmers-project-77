@@ -13,7 +13,7 @@ resource "yandex_vpc_subnet" "app_subnet" {
   v4_cidr_blocks = ["192.168.10.0/24"]
 }
 
-# Создание группы безопасности
+# Создание группы безопасности для серверов
 resource "yandex_vpc_security_group" "app_sg" {
   name        = "app-sg"
   network_id  = yandex_vpc_network.app_network.id
@@ -44,16 +44,72 @@ resource "yandex_vpc_security_group" "app_sg" {
     protocol       = "TCP"
     port           = 80
     v4_cidr_blocks = [
-      "198.18.235.0/24",  # Диапазон IP для проверок работоспособности Yandex Cloud
-      "198.18.248.0/24"   # Дополнительный диапазон для проверок работоспособности
+      "198.18.235.0/24",   # Диапазон IP для проверок работоспособности Yandex Cloud
+      "198.18.248.0/24",   # Дополнительный диапазон для проверок работоспособности
+      "172.16.0.0/12",     # Внутренние адреса Yandex Cloud
+      "10.0.0.0/8",        # Внутренние адреса Yandex Cloud
+      "192.168.0.0/16"     # Внутренние адреса Yandex Cloud
     ]
     description = "Healthchecks from Yandex Cloud"
+  }
+
+  # Разрешаем весь входящий трафик из подсети
+  ingress {
+    protocol       = "ANY"
+    v4_cidr_blocks = [yandex_vpc_subnet.app_subnet.v4_cidr_blocks[0]]
+    description    = "All traffic from subnet"
   }
 
   # Разрешаем исходящий трафик
   egress {
     protocol       = "ANY"
     v4_cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Создание группы безопасности для балансировщика нагрузки
+resource "yandex_vpc_security_group" "lb_sg" {
+  name        = "lb-sg"
+  network_id  = yandex_vpc_network.app_network.id
+
+  # Разрешаем входящий трафик на порт 80 (HTTP)
+  ingress {
+    protocol       = "TCP"
+    port           = 80
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    description    = "HTTP traffic from internet"
+  }
+
+  # Разрешаем входящий трафик на порт 443 (HTTPS)
+  ingress {
+    protocol       = "TCP"
+    port           = 443
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    description    = "HTTPS traffic from internet"
+  }
+
+  # Разрешаем весь входящий трафик для проверок работоспособности
+  ingress {
+    protocol       = "ANY"
+    from_port      = 0
+    to_port        = 65535
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    description    = "All healthcheck traffic"
+  }
+
+  # Разрешаем исходящий трафик к серверам
+  egress {
+    protocol       = "TCP"
+    port           = 80
+    v4_cidr_blocks = [yandex_vpc_subnet.app_subnet.v4_cidr_blocks[0]]
+    description    = "HTTP traffic to backend servers"
+  }
+
+  # Разрешаем весь исходящий трафик
+  egress {
+    protocol       = "ANY"
+    v4_cidr_blocks = ["0.0.0.0/0"]
+    description    = "All outgoing traffic"
   }
 }
 
@@ -334,7 +390,7 @@ resource "yandex_alb_target_group" "app_target_group" {
 
 # Создание бэкенд-группы для балансировщика
 resource "yandex_alb_backend_group" "app_backend_group" {
-  name = "app-backend-group"
+  name = "app-backend-group-new"  # Изменено имя ресурса в Yandex Cloud
 
   http_backend {
     name             = "app-http-backend"
@@ -381,7 +437,7 @@ resource "yandex_alb_load_balancer" "app_load_balancer" {
   name = "app-load-balancer"
 
   network_id = yandex_vpc_network.app_network.id
-  security_group_ids = [yandex_vpc_security_group.app_sg.id]
+  security_group_ids = [yandex_vpc_security_group.lb_sg.id]
 
   allocation_policy {
     location {
