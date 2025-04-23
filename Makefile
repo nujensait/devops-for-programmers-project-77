@@ -27,7 +27,7 @@ wsl-reinstall:  ## Переустановить WSL (сбросить)
 
 ## --- Ya Cloud cmds ~ Terraform ---
 
-edit-vault: ## Редактировать vault.yml
+edit-vault ansible-vault-edit: ## Редактировать зашифрованный файл с переменными
 	ansible-vault edit ansible/vault.yml
 
 view-vault:	## show secret keys
@@ -52,9 +52,6 @@ show-lb-ip:  ## Показать IP-адрес балансировщика на
 	cd terraform && terraform output load_balancer_ip
 
 ## --- Ansible ---
-ansible-vault-edit:  ## Редактировать зашифрованный файл с переменными
-	ansible-vault edit ansible/vault.yml
-
 ansible-deps:  ## Установить зависимости Ansible
 	ansible-galaxy install -r ansible/requirements.yml
 
@@ -74,8 +71,12 @@ ansible-restart:  ## Перезапустить приложение
 	chmod +x deploy.sh && ./deploy.sh --tags restart
 
 ## --- Общие команды ---
+
 setup: tf-init ansible-deps  ## Инициализировать проект (Terraform + Ansible)
+
 deploy: tf-apply ansible-play  ## Развернуть инфраструктуру и применить конфигурацию
-all: ## Все команды
-	./load_vault_vars.sh && cd terraform && terraform init -reconfigure && terraform plan && terraform apply
+
+all: ## Полное развертывание (инфраструктура + конфигурация)
+	./load_vault_vars.sh && cd terraform && terraform init -reconfigure && terraform apply && cd .. && make ansible-play
+
 clean: tf-destroy  ## Удалить всю инфраструктуру

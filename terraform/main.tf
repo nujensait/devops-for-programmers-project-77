@@ -450,8 +450,7 @@ resource "yandex_alb_load_balancer" "app_load_balancer" {
     name = "app-listener"
     endpoint {
       address {
-        external_ipv4_address {
-        }
+        external_ipv4_address {}
       }
       ports = [80]
     }

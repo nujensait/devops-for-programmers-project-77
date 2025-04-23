@@ -51,3 +51,35 @@ resource "datadog_monitor" "example" {
   
   tags = ["env:test"]
 }
+
+# Пример балансировщика нагрузки
+resource "yandex_alb_load_balancer" "example_lb" {
+  count = 0  # Не создаем реальный ресурс
+  name  = "example-load-balancer"
+
+  network_id = "network-id"
+  
+  # Правильный синтаксис для allocation_policy
+  allocation_policy {
+    location {
+      zone_id   = var.yc_zone
+      subnet_id = "subnet-id"
+    }
+  }
+
+  # Правильный синтаксис для listener
+  listener {
+    name = "example-listener"
+    endpoint {
+      address {
+        external_ipv4_address {}
+      }
+      ports = [80]
+    }
+    http {
+      handler {
+        http_router_id = "router-id"
+      }
+    }
+  }
+}
