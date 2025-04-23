@@ -15,8 +15,8 @@ resource "yandex_vpc_subnet" "app_subnet" {
 
 # Создание группы безопасности для серверов
 resource "yandex_vpc_security_group" "app_sg" {
-  name        = "app-sg"
-  network_id  = yandex_vpc_network.app_network.id
+  name       = "app-sg"
+  network_id = yandex_vpc_network.app_network.id
 
   # Разрешаем входящий трафик на порт 80 (HTTP)
   ingress {
@@ -41,14 +41,14 @@ resource "yandex_vpc_security_group" "app_sg" {
 
   # Разрешаем входящий трафик для проверок работоспособности от Yandex Cloud
   ingress {
-    protocol       = "TCP"
-    port           = 80
+    protocol = "TCP"
+    port     = 80
     v4_cidr_blocks = [
-      "198.18.235.0/24",   # Диапазон IP для проверок работоспособности Yandex Cloud
-      "198.18.248.0/24",   # Дополнительный диапазон для проверок работоспособности
-      "172.16.0.0/12",     # Внутренние адреса Yandex Cloud
-      "10.0.0.0/8",        # Внутренние адреса Yandex Cloud
-      "192.168.0.0/16"     # Внутренние адреса Yandex Cloud
+      "198.18.235.0/24", # Диапазон IP для проверок работоспособности Yandex Cloud
+      "198.18.248.0/24", # Дополнительный диапазон для проверок работоспособности
+      "172.16.0.0/12",   # Внутренние адреса Yandex Cloud
+      "10.0.0.0/8",      # Внутренние адреса Yandex Cloud
+      "192.168.0.0/16"   # Внутренние адреса Yandex Cloud
     ]
     description = "Healthchecks from Yandex Cloud"
   }
@@ -138,7 +138,7 @@ resource "yandex_compute_instance" "web_server_1" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${var.ssh_public_key}"
+    ssh-keys  = "ubuntu:${var.ssh_public_key}"
     user-data = <<-EOF
       #!/bin/bash
       apt-get update
@@ -268,7 +268,7 @@ resource "yandex_compute_instance" "web_server_2" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${var.ssh_public_key}"
+    ssh-keys  = "ubuntu:${var.ssh_public_key}"
     user-data = <<-EOF
       #!/bin/bash
       apt-get update
@@ -390,7 +390,7 @@ resource "yandex_alb_target_group" "app_target_group" {
 
 # Создание бэкенд-группы для балансировщика
 resource "yandex_alb_backend_group" "app_backend_group" {
-  name = "app-backend-group-new"  # Изменено имя ресурса в Yandex Cloud
+  name = "app-backend-group-new" # Изменено имя ресурса в Yandex Cloud
 
   http_backend {
     name             = "app-http-backend"
@@ -401,9 +401,9 @@ resource "yandex_alb_backend_group" "app_backend_group" {
       panic_threshold = 50
     }
     healthcheck {
-      timeout             = "1s"
-      interval            = "1s"
-      healthcheck_port    = 80
+      timeout          = "1s"
+      interval         = "1s"
+      healthcheck_port = 80
       http_healthcheck {
         path = "/"
       }
@@ -420,7 +420,7 @@ resource "yandex_alb_http_router" "app_router" {
 resource "yandex_alb_virtual_host" "app_virtual_host" {
   name           = "app-virtual-host"
   http_router_id = yandex_alb_http_router.app_router.id
-  
+
   route {
     name = "app-route"
     http_route {
@@ -436,7 +436,7 @@ resource "yandex_alb_virtual_host" "app_virtual_host" {
 resource "yandex_alb_load_balancer" "app_load_balancer" {
   name = "app-load-balancer"
 
-  network_id = yandex_vpc_network.app_network.id
+  network_id         = yandex_vpc_network.app_network.id
   security_group_ids = [yandex_vpc_security_group.lb_sg.id]
 
   allocation_policy {

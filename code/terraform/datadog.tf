@@ -18,7 +18,7 @@ resource "datadog_monitor" "app_availability" {
   renotify_interval = 60
 
   include_tags = true
-  
+
   tags = [
     "app:web-app",
     "env:production",
@@ -35,31 +35,31 @@ resource "datadog_synthetics_test" "load_balancer_test" {
   status    = "live"
   message   = "Балансировщик нагрузки недоступен. @devops@example.com"
   locations = ["aws:eu-central-1"]
-  
+
   request_definition {
     method = "GET"
     url    = "http://example.com" # Заменено на пример URL
   }
-  
+
   assertion {
     type     = "statusCode"
     operator = "is"
     target   = "200"
   }
-  
+
   options_list {
     tick_every = 300
-    
+
     retry {
       count    = 2
       interval = 300
     }
-    
+
     monitor_options {
       renotify_interval = 120
     }
   }
-  
+
   tags = [
     "app:web-app",
     "env:production",
