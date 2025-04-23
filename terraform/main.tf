@@ -60,7 +60,7 @@ resource "yandex_vpc_security_group" "app_sg" {
     description    = "All traffic from subnet"
   }
 
-  # Разрешаем исходящий трафик
+  # Разрешаем весь исходящий трафик
   egress {
     protocol       = "ANY"
     v4_cidr_blocks = ["0.0.0.0/0"]
@@ -69,8 +69,8 @@ resource "yandex_vpc_security_group" "app_sg" {
 
 # Создание группы безопасности для балансировщика нагрузки
 resource "yandex_vpc_security_group" "lb_sg" {
-  name        = "lb-sg"
-  network_id  = yandex_vpc_network.app_network.id
+  name       = "lb-sg"
+  network_id = yandex_vpc_network.app_network.id
 
   # Разрешаем входящий трафик на порт 80 (HTTP)
   ingress {
@@ -94,7 +94,7 @@ resource "yandex_vpc_security_group" "lb_sg" {
     from_port      = 0
     to_port        = 65535
     v4_cidr_blocks = ["0.0.0.0/0"]
-    description    = "All healthcheck traffic"
+    description    = "Health checks"
   }
 
   # Разрешаем исходящий трафик к серверам

@@ -43,12 +43,12 @@ resource "datadog_monitor" "example" {
   type    = "metric alert"
   message = "Example monitor message"
   query   = "avg(last_5m):avg:system.cpu.user{*} by {host} > 90"
-  
+
   monitor_thresholds {
     critical = 90
     warning  = 80
   }
-  
+
   tags = ["env:test"]
 }
 
@@ -58,7 +58,7 @@ resource "yandex_alb_load_balancer" "example_lb" {
   name  = "example-load-balancer"
 
   network_id = "network-id"
-  
+
   # Правильный синтаксис для allocation_policy
   allocation_policy {
     location {
