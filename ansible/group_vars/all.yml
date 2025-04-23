@@ -1,0 +1,4 @@
+---
+# Эти переменные будут заполнены автоматически скриптом после создания инфраструктуры
+web_server_1_ip: "{{ lookup('env', 'WEB_SERVER_1_IP') | default('') }}"
+web_server_2_ip: "{{ lookup('env', 'WEB_SERVER_2_IP') | default('') }}"

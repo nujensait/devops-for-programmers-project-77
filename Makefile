@@ -52,11 +52,26 @@ tf-destroy:  ## Уничтожить инфраструктуру
 ansible-vault-edit:  ## Редактировать зашифрованный файл с переменными
 	ansible-vault edit ansible/vault.yml
 
+ansible-deps:  ## Установить зависимости Ansible
+	ansible-galaxy install -r ansible/requirements.yml
+
 ansible-play:  ## Запустить Ansible playbook
-	ansible-playbook ansible/playbook.yml --ask-vault-pass
+	chmod +x deploy.sh && ./deploy.sh
+
+ansible-setup:  ## Запустить только задачи настройки
+	chmod +x deploy.sh && ./deploy.sh --tags setup
+
+ansible-deploy:  ## Запустить только задачи деплоя
+	chmod +x deploy.sh && ./deploy.sh --tags deploy
+
+ansible-update:  ## Запустить только задачи обновления
+	chmod +x deploy.sh && ./deploy.sh --tags update
+
+ansible-restart:  ## Перезапустить приложение
+	chmod +x deploy.sh && ./deploy.sh --tags restart
 
 ## --- Общие команды ---
-setup: tf-init  ## Инициализировать проект (Terraform + Ansible)
+setup: tf-init ansible-deps  ## Инициализировать проект (Terraform + Ansible)
 deploy: tf-apply ansible-play  ## Развернуть инфраструктуру и применить конфигурацию
 all: ## Все команды
 	./load_vault_vars.sh && cd terraform && terraform init -reconfigure && terraform plan && terraform apply

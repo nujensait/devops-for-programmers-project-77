@@ -1,0 +1,73 @@
+---
+- name: Setup web servers
+  hosts: webservers
+  become: true
+  vars:
+    docker_install_compose: true
+    docker_compose_version: "2.17.2"
+    pip_install_packages:
+      - name: docker
+      - name: docker-compose
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      tags: [setup, update]
+
+    - name: Install required packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+          - python3-pip
+        state: present
+      tags: [setup, packages]
+
+    - name: Include Docker role
+      include_role:
+        name: geerlingguy.docker
+      tags: [setup, docker]
+
+    - name: Include pip role
+      include_role:
+        name: geerlingguy.pip
+      tags: [setup, pip]
+
+    - name: Create app directory
+      file:
+        path: /opt/app
+        state: directory
+        mode: '0755'
+      tags: [deploy, app]
+
+    - name: Copy docker-compose.yml
+      copy:
+        src: ../docker-compose.yml
+        dest: /opt/app/docker-compose.yml
+        mode: '0644'
+      tags: [deploy, app]
+
+    - name: Copy application code
+      synchronize:
+        src: ../code/
+        dest: /opt/app/code/
+        delete: yes
+        recursive: yes
+      tags: [deploy, app]
+
+    - name: Deploy application with Docker Compose
+      community.docker.docker_compose:
+        project_src: /opt/app
+        state: present
+      tags: [deploy, app]
+
+    - name: Ensure containers are running
+      community.docker.docker_compose:
+        project_src: /opt/app
+        state: present
+        restarted: yes
+      tags: [deploy, restart]
