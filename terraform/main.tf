@@ -138,7 +138,7 @@ resource "yandex_compute_instance" "web_server_1" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+    ssh-keys = "ubuntu:${var.ssh_public_key}"
     user-data = <<-EOF
       #!/bin/bash
       apt-get update
@@ -268,7 +268,7 @@ resource "yandex_compute_instance" "web_server_2" {
   }
 
   metadata = {
-    ssh-keys = "ubuntu:${file("~/.ssh/id_rsa.pub")}"
+    ssh-keys = "ubuntu:${var.ssh_public_key}"
     user-data = <<-EOF
       #!/bin/bash
       apt-get update
